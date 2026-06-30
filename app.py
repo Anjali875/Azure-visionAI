@@ -32,8 +32,8 @@ def analyze():
 
     api_url = (
         f"{VISION_ENDPOINT}/computervision/imageanalysis:analyze"
-        f"?api-version=2023-10-01&features=Tags,Read"
-    )
+        "?api-version=2023-10-01&features=Tags,Read,Landmarks"
+)
     headers = {"Ocp-Apim-Subscription-Key": VISION_KEY}
 
     try:
@@ -52,9 +52,22 @@ def analyze():
         return jsonify({"error": f"Request to Azure AI Vision failed: {exc}"}), 502
 
     try:
-        body = resp.json()
+       body = resp.json()
+       # Extract landmarks
+       landmarks = []
+
+       if "landmarksResult" in body:
+        for landmark in body["landmarksResult"].get("values", []):
+         landmarks.append({
+            "name": landmark["name"],
+            "confidence": round(landmark["confidence"] * 100, 2)
+        })
+
+       body["detectedLandmarks"] = landmarks
+       print(body)
     except ValueError:
-        body = {"error": resp.text or "Unexpected response from Azure AI Vision"}
+     body = {
+        "error": resp.text or "Unexpected response from Azure AI Vision"}
 
     return jsonify(body), resp.status_code
 

@@ -635,7 +635,32 @@ function showResults(data) {
       tagsWrap.appendChild(el);
     });
   }
+// LANDMARKS
+const landmarks = data.detectedLandmarks || [];
 
+if (landmarks.length > 0) {
+
+    const group = document.createElement("div");
+    group.className = "result-group";
+
+    group.innerHTML = `
+        <div class="result-label">Landmark Recognition</div>
+        <div class="tags-container" id="landmark-tags"></div>
+    `;
+
+    document.getElementById("results-content").appendChild(group);
+
+    const container = document.getElementById("landmark-tags");
+
+    landmarks.forEach(l => {
+
+        const tag = document.createElement("span");
+        tag.className = "modern-tag";
+        tag.innerHTML = `${l.name} <span class="tag-conf">${l.confidence}%</span>`;
+
+        container.appendChild(tag);
+    });
+}
   // BARS (top 5)
   const barsEl = document.getElementById('res-bars');
   barsEl.innerHTML = '';
